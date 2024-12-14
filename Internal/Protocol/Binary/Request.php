@@ -92,12 +92,14 @@ final class Request implements Writable
         return self::store(Opcode::Add, $key, $item);
     }
 
-    /**
-     * @return self<void>
-     */
     public static function replace(Key $key, Item $item): self
     {
         return self::store(Opcode::Replace, $key, $item);
+    }
+
+    public static function append(Key $key, Item $item): self
+    {
+        return self::change(Opcode::Append, $key, $item);
     }
 
     public function write(WriteTo $writer): void
@@ -142,6 +144,16 @@ final class Request implements Writable
             Opcode::Version => static fn(Response $response): string => $response->value ?? '',
             default => static fn() => throw new \Exception('Not implemented yet'),
         };
+    }
+
+    /**
+     * @return self<void>
+     */
+    private static function change(Opcode $opcode, Key $key, Item $item): self
+    {
+        return self::fromOpcode($opcode)
+            ->withKey($key)
+            ->withItem($item);
     }
 
     /**
