@@ -107,7 +107,7 @@ final class BinaryProtocol implements Protocol
 
     public function prepend(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        $this->queueRequest(Request::prepend($key, $item))->await($cancellation);
     }
 
     public function cas(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void

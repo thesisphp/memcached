@@ -102,6 +102,11 @@ final class Request implements Writable
         return self::change(Opcode::Append, $key, $item);
     }
 
+    public static function prepend(Key $key, Item $item): self
+    {
+        return self::change(Opcode::Prepend, $key, $item);
+    }
+
     public function write(WriteTo $writer): void
     {
         $keyValue = $this->key !== null ? (string) $this->key : null;
