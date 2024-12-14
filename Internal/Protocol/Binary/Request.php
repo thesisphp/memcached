@@ -16,6 +16,42 @@ use Typhoon\Memcached\Key;
 final class Request implements Writable
 {
     /**
+     * @return self<void>
+     */
+    public static function set(Key $key, Item $item): self
+    {
+        return self::store(Opcode::Set, $key, $item);
+    }
+
+    /**
+     * @return self<void>
+     */
+    public static function add(Key $key, Item $item): self
+    {
+        return self::store(Opcode::Add, $key, $item);
+    }
+
+    public static function replace(Key $key, Item $item): self
+    {
+        return self::store(Opcode::Replace, $key, $item);
+    }
+
+    public static function append(Key $key, Item $item): self
+    {
+        return self::change(Opcode::Append, $key, $item);
+    }
+
+    public static function prepend(Key $key, Item $item): self
+    {
+        return self::change(Opcode::Prepend, $key, $item);
+    }
+
+    public static function delete(Key $key): self
+    {
+        return self::change(Opcode::Delete, $key);
+    }
+
+    /**
      * @param non-negative-int $id
      */
     private function __construct(
@@ -76,37 +112,6 @@ final class Request implements Writable
         return new self($this->opcode, $this->id, $this->withExtras, $this->key, $item);
     }
 
-    /**
-     * @return self<void>
-     */
-    public static function set(Key $key, Item $item): self
-    {
-        return self::store(Opcode::Set, $key, $item);
-    }
-
-    /**
-     * @return self<void>
-     */
-    public static function add(Key $key, Item $item): self
-    {
-        return self::store(Opcode::Add, $key, $item);
-    }
-
-    public static function replace(Key $key, Item $item): self
-    {
-        return self::store(Opcode::Replace, $key, $item);
-    }
-
-    public static function append(Key $key, Item $item): self
-    {
-        return self::change(Opcode::Append, $key, $item);
-    }
-
-    public static function prepend(Key $key, Item $item): self
-    {
-        return self::change(Opcode::Prepend, $key, $item);
-    }
-
     public function write(WriteTo $writer): void
     {
         $keyValue = $this->key !== null ? (string) $this->key : null;
@@ -154,11 +159,16 @@ final class Request implements Writable
     /**
      * @return self<void>
      */
-    private static function change(Opcode $opcode, Key $key, Item $item): self
+    private static function change(Opcode $opcode, Key $key, ?Item $item = null): self
     {
-        return self::fromOpcode($opcode)
-            ->withKey($key)
-            ->withItem($item);
+        $request = self::fromOpcode($opcode)
+            ->withKey($key);
+
+        if ($item !== null) {
+            $request = $request->withItem($item);
+        }
+
+        return $request;
     }
 
     /**

@@ -127,7 +127,7 @@ final class BinaryProtocol implements Protocol
 
     public function delete(Key $key, Cancellation $cancellation = new NullCancellation()): void
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        $this->queueRequest(Request::delete($key))->await($cancellation);
     }
 
     public function touch(Key $key, ?Expiration $expiration = null, Cancellation $cancellation = new NullCancellation()): void
