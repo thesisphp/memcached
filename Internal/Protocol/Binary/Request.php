@@ -52,6 +52,14 @@ final class Request implements Writable
     }
 
     /**
+     * @return self<int>
+     */
+    public static function increment(Key $key, Item $item): self
+    {
+        return self::incrDecr(Opcode::Increment, $key, $item);
+    }
+
+    /**
      * @return self<string>
      */
     public static function version(): self
@@ -113,7 +121,7 @@ final class Request implements Writable
                 extrasLength: 8,
                 totalBodyLength: 8
                     + ($keyValue !== null ? \strlen($keyValue) : 0)
-                    + ($this->item !== null ? \strlen($this->item->value) : 0),
+                    + \strlen((string) $this->item?->value ?? ''),
                 cas: $this->item?->casId ?? 0,
             ),
             Opcode::Append, Opcode::Prepend => new Header(
@@ -121,7 +129,7 @@ final class Request implements Writable
                 $this->opcode,
                 $this->id,
                 keyLength: $keyValue !== null ? \strlen($keyValue) : 0,
-                totalBodyLength: ($keyValue !== null ? \strlen($keyValue) : 0) + ($this->item !== null ? \strlen($this->item->value) : 0),
+                totalBodyLength: ($keyValue !== null ? \strlen($keyValue) : 0) + \strlen((string) $this->item?->value ?? ''),
                 cas: $this->item?->casId ?? 0,
             ),
             Opcode::Delete => new Header(
@@ -172,6 +180,19 @@ final class Request implements Writable
     private function withItem(Item $item): self
     {
         return new self($this->opcode, $this->writeRequest, $this->id, $this->key, $item);
+    }
+
+    private static function incrDecr(Opcode $opcode, Key $key, Item $item): self
+    {
+        return self::fromOpcode($opcode, static function (WriteTo $writer, self $request): void {
+            $writer
+                ->writeUint64((int) $request->item?->value ?? 0)
+                ->writeUint64($request->item?->initialValue ?? 0)
+                ->writeUint32($request->item?->expiration?->value ?? 0)
+                ->write($request->key !== null ? (string) $request->key : '');
+        })
+            ->withKey($key)
+            ->withItem($item);
     }
 
     /**
