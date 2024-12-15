@@ -67,7 +67,7 @@ final class BinaryProtocol implements Protocol
 
     public function verbosity(int $level, Cancellation $cancellation = new NullCancellation()): void
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        $this->queueRequest(Request::verbosity($level))->await($cancellation);
     }
 
     public function quit(): void

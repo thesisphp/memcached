@@ -90,7 +90,7 @@ final class Request implements Writable
     }
 
     /**
-     * @return self<string>
+     * @return self<void>
      */
     public static function flush(): self
     {
@@ -98,11 +98,25 @@ final class Request implements Writable
     }
 
     /**
-     * @return self<string>
+     * @return self<void>
      */
     public static function quit(): self
     {
         return self::fromOpcode(Opcode::Quit);
+    }
+
+    /**
+     * @return self<void>
+     */
+    public static function verbosity(int $verbosityLevel): self
+    {
+        return new self(
+            Opcode::Verbosity,
+            writeRequest: static function (WriteTo $writer, self $request): void {
+                $writer->writeUint32($request->verbosityLevel ?? 0);
+            },
+            verbosityLevel: $verbosityLevel,
+        );
     }
 
     /**
@@ -128,6 +142,7 @@ final class Request implements Writable
         public readonly int $id = 1,
         private readonly ?Key $key = null,
         private readonly ?Item $item = null,
+        private readonly ?int $verbosityLevel = null,
     ) {
         $this->writeRequest = $writeRequest ?: static function (WriteTo $_): void {};
     }
@@ -146,6 +161,12 @@ final class Request implements Writable
         $keyValue = $this->key !== null ? (string) $this->key : null;
 
         $header = match ($this->opcode) {
+            Opcode::Verbosity => new Header(
+                Magic::REQUEST,
+                $this->opcode,
+                $this->id,
+                extrasLength: 4,
+            ),
             Opcode::Version, Opcode::Flush, Opcode::Quit => new Header(
                 Magic::REQUEST,
                 $this->opcode,
