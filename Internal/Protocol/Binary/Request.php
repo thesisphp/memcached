@@ -60,6 +60,14 @@ final class Request implements Writable
     }
 
     /**
+     * @return self<int>
+     */
+    public static function decrement(Key $key, Item $item): self
+    {
+        return self::incrDecr(Opcode::Decrement, $key, $item);
+    }
+
+    /**
      * @return self<string>
      */
     public static function version(): self

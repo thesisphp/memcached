@@ -122,7 +122,7 @@ final class BinaryProtocol implements Protocol
 
     public function decr(Key $key, int $delta, Cancellation $cancellation = new NullCancellation()): int
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        $this->queueRequest(Request::decrement($key, new Item($delta)))->await($cancellation);
     }
 
     public function delete(Key $key, Cancellation $cancellation = new NullCancellation()): void
