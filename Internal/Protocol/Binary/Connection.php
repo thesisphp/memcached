@@ -52,8 +52,13 @@ final class Connection
                 }
             }
 
-            $queue->complete();
-            $socket->close();
+            if (!$queue->isComplete()) {
+                $queue->complete();
+            }
+
+            if (!$socket->isClosed()) {
+                $socket->close();
+            }
         });
     }
 
