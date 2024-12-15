@@ -142,7 +142,7 @@ final class BinaryProtocol implements Protocol
 
     public function flush(Cancellation $cancellation = new NullCancellation()): void
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        $this->queueRequest(Request::flush())->await($cancellation);
     }
 
     /**
