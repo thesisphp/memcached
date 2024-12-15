@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Typhoon\Memcached\Internal\Protocol\Binary;
 
 use Typhoon\ByteOrder\WriteTo;
+use Typhoon\Endian\endian;
 use Typhoon\Memcached\Item;
 use Typhoon\Memcached\Key;
 
@@ -229,6 +230,7 @@ final class Request implements Writable
     {
         return match ($this->opcode) {
             Opcode::Version => static fn(Response $response): string => $response->value ?? '',
+            Opcode::Increment, Opcode::Decrement => static fn(Response $response) => $response->value !== null ? endian::network->unpackUint64($response->value) : 0,
             default => static fn(Response $response) => dump($response),
         };
     }
