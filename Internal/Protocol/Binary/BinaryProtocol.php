@@ -72,7 +72,7 @@ final class BinaryProtocol implements Protocol
 
     public function quit(): void
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        $this->queueRequest(Request::quit())->await();
     }
 
     public function get(Key $key, Cancellation $cancellation = new NullCancellation()): ?Item

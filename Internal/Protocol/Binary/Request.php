@@ -98,6 +98,14 @@ final class Request implements Writable
     }
 
     /**
+     * @return self<string>
+     */
+    public static function quit(): self
+    {
+        return self::fromOpcode(Opcode::Quit);
+    }
+
+    /**
      * @template E
      * @param ?callable(WriteTo): void $writeRequest
      * @return self<E>
@@ -138,7 +146,7 @@ final class Request implements Writable
         $keyValue = $this->key !== null ? (string) $this->key : null;
 
         $header = match ($this->opcode) {
-            Opcode::Version, Opcode::Flush => new Header(
+            Opcode::Version, Opcode::Flush, Opcode::Quit => new Header(
                 Magic::REQUEST,
                 $this->opcode,
                 $this->id,
