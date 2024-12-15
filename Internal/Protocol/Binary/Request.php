@@ -32,21 +32,33 @@ final class Request implements Writable
         return self::store(Opcode::Add, $key, $item);
     }
 
+    /**
+     * @return self<void>
+     */
     public static function replace(Key $key, Item $item): self
     {
         return self::store(Opcode::Replace, $key, $item);
     }
 
+    /**
+     * @return self<void>
+     */
     public static function append(Key $key, Item $item): self
     {
         return self::change(Opcode::Append, $key, $item);
     }
 
+    /**
+     * @return self<void>
+     */
     public static function prepend(Key $key, Item $item): self
     {
         return self::change(Opcode::Prepend, $key, $item);
     }
 
+    /**
+     * @return self<void>
+     */
     public static function delete(Key $key): self
     {
         return self::change(Opcode::Delete, $key);
@@ -251,6 +263,9 @@ final class Request implements Writable
         return new self($this->opcode, $this->writeRequest, $this->id, $this->key, $item);
     }
 
+    /**
+     * @return self<int>
+     */
     private static function incrDecr(Opcode $opcode, Key $key, Item $item): self
     {
         return self::fromOpcode($opcode, static function (WriteTo $writer, self $request): void {
