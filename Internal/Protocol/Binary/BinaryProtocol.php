@@ -112,7 +112,7 @@ final class BinaryProtocol implements Protocol
 
     public function cas(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        $this->queueRequest(Request::set($key, $item))->await($cancellation);
     }
 
     public function incr(Key $key, int $delta, Cancellation $cancellation = new NullCancellation()): int
@@ -122,7 +122,7 @@ final class BinaryProtocol implements Protocol
 
     public function decr(Key $key, int $delta, Cancellation $cancellation = new NullCancellation()): int
     {
-        $this->queueRequest(Request::decrement($key, new Item($delta)))->await($cancellation);
+        return $this->queueRequest(Request::decrement($key, new Item($delta)))->await($cancellation);
     }
 
     public function delete(Key $key, Cancellation $cancellation = new NullCancellation()): void
@@ -132,7 +132,7 @@ final class BinaryProtocol implements Protocol
 
     public function touch(Key $key, ?Expiration $expiration = null, Cancellation $cancellation = new NullCancellation()): void
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        $this->queueRequest(Request::touch($key, new Item('', expiration: $expiration)))->await($cancellation);
     }
 
     public function stats(Cancellation $cancellation = new NullCancellation()): iterable

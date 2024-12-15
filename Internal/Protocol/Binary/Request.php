@@ -68,6 +68,20 @@ final class Request implements Writable
     }
 
     /**
+     * @return self<void>
+     */
+    public static function touch(Key $key, Item $item): self
+    {
+        return self::fromOpcode(Opcode::Touch, static function (WriteTo $writer, self $request): void {
+            $writer
+                ->writeUint32($request->item?->expiration?->value ?? 0)
+                ->write($request->key !== null ? (string) $request->key : '');
+        })
+            ->withKey($key)
+            ->withItem($item);
+    }
+
+    /**
      * @return self<string>
      */
     public static function version(): self
@@ -157,6 +171,14 @@ final class Request implements Writable
                 totalBodyLength: 20 + ($keyValue !== null ? \strlen($keyValue) : 0),
                 cas: $this->item?->casId ?? 0,
             ),
+            Opcode::Touch => new Header(
+                Magic::REQUEST,
+                $this->opcode,
+                $this->id,
+                keyLength: $keyValue !== null ? \strlen($keyValue) : 0,
+                extrasLength: 4,
+                totalBodyLength: 4 + ($keyValue !== null ? \strlen($keyValue) : 0),
+            ),
         };
 
         $header->write($writer);
@@ -170,7 +192,7 @@ final class Request implements Writable
     {
         return match ($this->opcode) {
             Opcode::Version => static fn(Response $response): string => $response->value ?? '',
-            default => static fn() => throw new \Exception('Not implemented yet'),
+            default => static fn(Response $response) => dump($response),
         };
     }
 
