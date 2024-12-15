@@ -14,9 +14,10 @@ final class Item
      * @param non-negative-int $casId
      */
     public function __construct(
-        public readonly string $value,
+        public readonly string|int $value,
         public readonly ?Expiration $expiration = null,
         public readonly int $flags = 0,
         public readonly int $casId = 0,
+        public readonly int $initialValue = 0,
     ) {}
 }

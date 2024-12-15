@@ -52,26 +52,6 @@ final class Request implements Writable
     }
 
     /**
-     * @param non-negative-int $id
-     */
-    private function __construct(
-        public readonly Opcode $opcode,
-        public readonly int $id = 1,
-        public readonly bool $withExtras = false,
-        public readonly ?Key $key = null,
-        public readonly ?Item $item = null,
-    ) {}
-
-    /**
-     * @template E
-     * @return self<E>
-     */
-    public static function fromOpcode(Opcode $opcode): self
-    {
-        return new self($opcode);
-    }
-
-    /**
      * @return self<string>
      */
     public static function version(): self
@@ -80,69 +60,91 @@ final class Request implements Writable
     }
 
     /**
+     * @template E
+     * @param ?callable(WriteTo): void $writeRequest
+     * @return self<E>
+     */
+    private static function fromOpcode(Opcode $opcode, ?callable $writeRequest = null): self
+    {
+        return new self($opcode, $writeRequest);
+    }
+
+    /** @var callable(WriteTo, self): void */
+    private $writeRequest;
+
+    /**
+     * @param ?callable(WriteTo, self): void $writeRequest
+     * @param non-negative-int $id
+     */
+    private function __construct(
+        public readonly Opcode $opcode,
+        ?callable $writeRequest = null,
+        public readonly int $id = 1,
+        private readonly ?Key $key = null,
+        private readonly ?Item $item = null,
+    ) {
+        $this->writeRequest = $writeRequest ?: static function (WriteTo $_): void {};
+    }
+
+    /**
      * @param non-negative-int $id
      * @return self<T>
      */
     public function withId(int $id): self
     {
-        return new self($this->opcode, $id, $this->withExtras, $this->key, $this->item);
-    }
-
-    /**
-     * @return self<T>
-     */
-    public function withExtras(): self
-    {
-        return new self($this->opcode, $this->id, true, $this->key, $this->item);
-    }
-
-    /**
-     * @return self<T>
-     */
-    public function withKey(Key $key): self
-    {
-        return new self($this->opcode, $this->id, $this->withExtras, $key, $this->item);
-    }
-
-    /**
-     * @return self<T>
-     */
-    public function withItem(Item $item): self
-    {
-        return new self($this->opcode, $this->id, $this->withExtras, $this->key, $item);
+        return new self($this->opcode, $this->writeRequest, $id, $this->key, $this->item);
     }
 
     public function write(WriteTo $writer): void
     {
         $keyValue = $this->key !== null ? (string) $this->key : null;
 
-        $header = new Header(
-            Magic::REQUEST,
-            $this->opcode,
-            $this->id,
-            keyLength: $keyValue !== null ? \strlen($keyValue) : 0,
-            extrasLength: $this->withExtras ? 8 : 0,
-            totalBodyLength: ($this->withExtras ? 8 : 0)
-                + ($keyValue !== null ? \strlen($keyValue) : 0)
-                + ($this->item !== null ? \strlen($this->item->value) : 0),
-            cas: $this->item?->casId ?? 0,
-        );
+        $header = match ($this->opcode) {
+            Opcode::Version => new Header(
+                Magic::REQUEST,
+                $this->opcode,
+                $this->id,
+            ),
+            Opcode::Set, Opcode::Add, Opcode::Replace => new Header(
+                Magic::REQUEST,
+                $this->opcode,
+                $this->id,
+                keyLength: $keyValue !== null ? \strlen($keyValue) : 0,
+                extrasLength: 8,
+                totalBodyLength: 8
+                    + ($keyValue !== null ? \strlen($keyValue) : 0)
+                    + ($this->item !== null ? \strlen($this->item->value) : 0),
+                cas: $this->item?->casId ?? 0,
+            ),
+            Opcode::Append, Opcode::Prepend => new Header(
+                Magic::REQUEST,
+                $this->opcode,
+                $this->id,
+                keyLength: $keyValue !== null ? \strlen($keyValue) : 0,
+                totalBodyLength: ($keyValue !== null ? \strlen($keyValue) : 0) + ($this->item !== null ? \strlen($this->item->value) : 0),
+                cas: $this->item?->casId ?? 0,
+            ),
+            Opcode::Delete => new Header(
+                Magic::REQUEST,
+                $this->opcode,
+                $this->id,
+                keyLength: $keyValue !== null ? \strlen($keyValue) : 0,
+                totalBodyLength: ($keyValue !== null ? \strlen($keyValue) : 0),
+                cas: $this->item?->casId ?? 0,
+            ),
+            Opcode::Increment, Opcode::Decrement => new Header(
+                Magic::REQUEST,
+                $this->opcode,
+                $this->id,
+                keyLength: $keyValue !== null ? \strlen($keyValue) : 0,
+                extrasLength: 20,
+                totalBodyLength: 20 + ($keyValue !== null ? \strlen($keyValue) : 0),
+                cas: $this->item?->casId ?? 0,
+            ),
+        };
 
         $header->write($writer);
-
-        if ($this->withExtras) {
-            $writer
-                ->writeUint32($this->item?->flags ?? 0)
-                ->writeUint32($this->item?->expiration?->value ?? 0);
-        }
-
-        if ($keyValue !== null) {
-            $writer->write($keyValue);
-        }
-
-        if ($this->item !== null) {
-            $writer->write($this->item->value);
-        }
+        ($this->writeRequest)($writer, $this);
     }
 
     /**
@@ -157,11 +159,30 @@ final class Request implements Writable
     }
 
     /**
+     * @return self<T>
+     */
+    private function withKey(Key $key): self
+    {
+        return new self($this->opcode, $this->writeRequest, $this->id, $key, $this->item);
+    }
+
+    /**
+     * @return self<T>
+     */
+    private function withItem(Item $item): self
+    {
+        return new self($this->opcode, $this->writeRequest, $this->id, $this->key, $item);
+    }
+
+    /**
      * @return self<void>
      */
     private static function change(Opcode $opcode, Key $key, ?Item $item = null): self
     {
-        $request = self::fromOpcode($opcode)
+        $request = self::fromOpcode($opcode, static function (WriteTo $writer, self $request): void {
+            $writer->write($request->key !== null ? (string) $request->key : '');
+            $writer->write((string) $request->item?->value ?? '');
+        })
             ->withKey($key);
 
         if ($item !== null) {
@@ -176,8 +197,14 @@ final class Request implements Writable
      */
     private static function store(Opcode $opcode, Key $key, Item $item): self
     {
-        return self::fromOpcode($opcode)
-            ->withExtras()
+        return self::fromOpcode($opcode, static function (WriteTo $writer, self $request): void {
+            $writer
+                ->writeUint32($request->item?->flags ?? 0)
+                ->writeUint32($request->item?->expiration?->value ?? 0);
+
+            $writer->write($request->key !== null ? (string) $request->key : '');
+            $writer->write((string) $request->item?->value ?? '');
+        })
             ->withKey($key)
             ->withItem($item);
     }
