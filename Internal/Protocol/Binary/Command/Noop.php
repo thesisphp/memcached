@@ -9,30 +9,28 @@ use Typhoon\Memcached\Internal\Protocol\Binary\Command;
 use Typhoon\Memcached\Internal\Protocol\Binary\Header;
 use Typhoon\Memcached\Internal\Protocol\Binary\Magic;
 use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
-use Typhoon\Memcached\Item;
-use Typhoon\Memcached\Key;
 
 /**
  * @internal
  * @psalm-internal Typhoon\Memcached
  * @template-extends Command<void>
  */
-final class Change extends Command
+final class Noop extends Command
 {
     /**
      * @param non-negative-int $id
      */
-    public static function append(int $id, Key $key, Item $item): self
+    public static function flush(int $id): self
     {
-        return new self($id, Opcode::Append, $key, $item);
+        return new self($id, Opcode::Flush);
     }
 
     /**
      * @param non-negative-int $id
      */
-    public static function prepend(int $id, Key $key, Item $item): self
+    public static function quit(int $id): self
     {
-        return new self($id, Opcode::Prepend, $key, $item);
+        return new self($id, Opcode::Quit);
     }
 
     /**
@@ -41,8 +39,6 @@ final class Change extends Command
     private function __construct(
         private readonly int $id,
         private readonly Opcode $opcode,
-        private readonly Key $key,
-        private readonly Item $item,
     ) {}
 
     public function id(): int
@@ -52,19 +48,12 @@ final class Change extends Command
 
     public function write(WriteTo $writer): void
     {
-        $keyValue = (string) $this->key;
-
         $header = new Header(
             Magic::REQUEST,
             $this->opcode,
             $this->id,
-            keyLength: \strlen($keyValue),
-            totalBodyLength: \strlen($keyValue) + \strlen((string) $this->item->value),
         );
 
         $header->write($writer);
-
-        $writer->write($keyValue);
-        $writer->write((string) $this->item->value);
     }
 }

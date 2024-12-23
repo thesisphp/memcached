@@ -9,16 +9,15 @@ use Typhoon\Memcached\Internal\Protocol\Binary\Command;
 use Typhoon\Memcached\Internal\Protocol\Binary\Header;
 use Typhoon\Memcached\Internal\Protocol\Binary\Magic;
 use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
-use Typhoon\Memcached\Internal\Protocol\Binary\Response;
 use Typhoon\Memcached\Item;
 use Typhoon\Memcached\Key;
 
 /**
  * @internal
  * @psalm-internal Typhoon\Memcached
- * @template-implements Command<void>
+ * @template-extends Command<void>
  */
-final class Store implements Command
+final class Store extends Command
 {
     /**
      * @param non-negative-int $id
@@ -54,6 +53,11 @@ final class Store implements Command
         private readonly Item $item,
     ) {}
 
+    public function id(): int
+    {
+        return $this->id;
+    }
+
     public function write(WriteTo $writer): void
     {
         $keyValue = (string) $this->key;
@@ -76,15 +80,5 @@ final class Store implements Command
 
         $writer->write($keyValue);
         $writer->write((string) $this->item->value);
-    }
-
-    public function id(): int
-    {
-        return $this->id;
-    }
-
-    public function parseResponse(Response $response): void
-    {
-        $response->throwOnError();
     }
 }

@@ -16,9 +16,9 @@ use Typhoon\Memcached\Key;
 /**
  * @internal
  * @psalm-internal Typhoon\Memcached
- * @template-implements Command<int>
+ * @template-extends Command<int>
  */
-final class IncrDecr implements Command
+final class IncrDecr extends Command
 {
     /**
      * @param non-negative-int $id
@@ -54,11 +54,6 @@ final class IncrDecr implements Command
         return $this->id;
     }
 
-    public function parseResponse(Response $response): int
-    {
-        return $response->value !== null ? endian::network->unpackUint64($response->value) : 0;
-    }
-
     public function write(WriteTo $writer): void
     {
         $keyValue = (string) $this->key;
@@ -80,5 +75,10 @@ final class IncrDecr implements Command
             ->writeUint32(0);
 
         $writer->write($keyValue);
+    }
+
+    protected function doParseResponse(Response $response): int
+    {
+        return $response->value !== null ? endian::network->unpackUint64($response->value) : 0;
     }
 }
