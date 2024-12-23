@@ -26,4 +26,28 @@ enum ResponseStatus: int
     case INTERNAL_ERROR = 0x0084;
     case BUSY = 0x0085;
     case TEMPORARY_FAILURE = 0x0086;
+
+    /**
+     * @return non-empty-string
+     */
+    public function describe(): string
+    {
+        return match ($this) {
+            self::NO_ERROR, self::AUTHENTICATION_CONTINUE => 'ok',
+            self::KEY_NOT_FOUND => 'Key not found',
+            self::KEY_EXISTS => 'Key exists',
+            self::VALUE_TOO_LARGE => 'Value too large',
+            self::INVALID_ARGUMENTS => 'Invalid arguments',
+            self::NOT_STORED => 'Not stored',
+            self::NON_NUMERIC => 'Non numeric',
+            self::VBUCKET_ANOTHER_SERVER => 'VBucket point to another server',
+            self::AUTHENTICATION_ERROR => 'Authentication error',
+            self::UNKNOWN_COMMAND => 'Unknown command',
+            self::OUT_OF_MEMORY => 'Out of memory',
+            self::NOT_SUPPORTED => 'Not supported',
+            self::INTERNAL_ERROR => 'Internal error',
+            self::BUSY => 'Server is busy',
+            self::TEMPORARY_FAILURE => 'Temporary failure',
+        };
+    }
 }
