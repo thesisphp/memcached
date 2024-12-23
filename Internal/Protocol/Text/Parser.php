@@ -163,10 +163,16 @@ final class Parser
             /** @var ItemHeaderFormat $header */
             $header = explode(' ', $items[$i]);
 
+            /** @var non-negative-int $flags */
+            $flags = (int) $header[2];
+
+            /** @var non-negative-int $casId */
+            $casId = (int) ($header[4] ?? 0);
+
             yield $header[1] => new Item(
                 $items[$i + 1],
-                flags: (int) $header[2],
-                casId: (int) ($header[4] ?? 0),
+                flags: $flags,
+                casId: $casId,
             );
         }
     }

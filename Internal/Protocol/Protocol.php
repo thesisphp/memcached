@@ -58,12 +58,14 @@ interface Protocol
     /**
      * @throws ConnectionIsClosed
      * @throws KeyNotStored
+     * @throws KeyAlreadyExists
      */
     public function add(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void;
 
     /**
      * @throws ConnectionIsClosed
      * @throws KeyNotStored
+     * @throws KeyNotFound
      */
     public function replace(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void;
 

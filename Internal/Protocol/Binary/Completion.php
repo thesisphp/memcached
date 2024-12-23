@@ -13,25 +13,24 @@ use Amp\DeferredFuture;
  */
 final class Completion
 {
-    /** @var callable(Response): T */
-    private $parseResponse;
-
     /**
      * @param DeferredFuture<T> $future
-     * @param callable(Response): T $parseResponse
+     * @param Command<T> $command
      */
     public function __construct(
         private readonly DeferredFuture $future,
-        callable $parseResponse,
-    ) {
-        $this->parseResponse = $parseResponse;
-    }
+        private readonly Command $command,
+    ) {}
 
     public function complete(Response $response): void
     {
-        $this->future->complete(
-            ($this->parseResponse)($response),
-        );
+        try {
+            $this->future->complete(
+                $this->command->parseResponse($response),
+            );
+        } catch (\Throwable $e) {
+            $this->future->error($e);
+        }
     }
 
     public function error(\Throwable $e): void

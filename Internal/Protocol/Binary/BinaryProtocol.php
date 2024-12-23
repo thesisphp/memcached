@@ -14,7 +14,6 @@ use Amp\Pipeline\Queue;
 use Amp\Socket\Socket;
 use Revolt\EventLoop;
 use Typhoon\Memcached\Exception\ConnectionIsClosed;
-use Typhoon\Memcached\Exception\WriteIsFailed;
 use Typhoon\Memcached\Expiration;
 use Typhoon\Memcached\Internal\Protocol\Protocol;
 use Typhoon\Memcached\Item;
@@ -30,7 +29,7 @@ final class BinaryProtocol implements Protocol
 
     private readonly CorrelationIdGenerator $sequence;
 
-    /** @var Queue<array{Completion, Request}> */
+    /** @var Queue<array{Completion, Command}> */
     private readonly Queue $queue;
 
     /** @var array<non-negative-int, Completion> */
@@ -43,11 +42,11 @@ final class BinaryProtocol implements Protocol
         $this->connection = $connection;
         $this->sequence = new CorrelationIdGenerator();
 
-        /** @var Queue<array{Completion, Request}> $queue */
+        /** @var Queue<array{Completion, Command}> $queue */
         $queue = new Queue();
         $this->queue = $queue;
 
-        EventLoop::queue($this->sendRequests(...), $queue->iterate());
+        EventLoop::queue($this->sendCommands(...), $queue->iterate());
         EventLoop::queue($this->resolveCompletions(...));
     }
 
@@ -58,21 +57,20 @@ final class BinaryProtocol implements Protocol
 
     /**
      * @throws ConnectionIsClosed
-     * @throws WriteIsFailed
      */
     public function version(Cancellation $cancellation = new NullCancellation()): string
     {
-        return $this->queueRequest(Request::version())->await($cancellation);
+        return $this->push(new Command\Version($this->sequence->next()))->await($cancellation);
     }
 
     public function verbosity(int $level, Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->queueRequest(Request::verbosity($level))->await($cancellation);
+        $this->push(new Command\Verbosity($this->sequence->next(), $level))->await($cancellation);
     }
 
     public function quit(): void
     {
-        $this->queueRequest(Request::quit())->await();
+        $this->push(Command\Noop::quit($this->sequence->next()))->await();
     }
 
     public function get(Key $key, Cancellation $cancellation = new NullCancellation()): ?Item
@@ -87,52 +85,52 @@ final class BinaryProtocol implements Protocol
 
     public function set(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->queueRequest(Request::set($key, $item))->await($cancellation);
+        $this->push(Command\Store::set($this->sequence->next(), $key, $item))->await($cancellation);
     }
 
     public function add(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->queueRequest(Request::add($key, $item))->await($cancellation);
+        $this->push(Command\Store::add($this->sequence->next(), $key, $item))->await($cancellation);
     }
 
     public function replace(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->queueRequest(Request::replace($key, $item))->await($cancellation);
+        $this->push(Command\Store::replace($this->sequence->next(), $key, $item))->await($cancellation);
     }
 
     public function append(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->queueRequest(Request::append($key, $item))->await($cancellation);
+        $this->push(Command\Change::append($this->sequence->next(), $key, $item))->await($cancellation);
     }
 
     public function prepend(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->queueRequest(Request::prepend($key, $item))->await($cancellation);
+        $this->push(Command\Change::prepend($this->sequence->next(), $key, $item))->await($cancellation);
     }
 
     public function cas(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->queueRequest(Request::set($key, $item))->await($cancellation);
+        $this->push(Command\Store::set($this->sequence->next(), $key, $item))->await($cancellation);
     }
 
     public function incr(Key $key, int $delta, Cancellation $cancellation = new NullCancellation()): int
     {
-        return $this->queueRequest(Request::increment($key, new Item($delta)))->await($cancellation);
+        return $this->push(Command\IncrDecr::incr($this->sequence->next(), $key, $delta))->await($cancellation);
     }
 
     public function decr(Key $key, int $delta, Cancellation $cancellation = new NullCancellation()): int
     {
-        return $this->queueRequest(Request::decrement($key, new Item($delta)))->await($cancellation);
+        return $this->push(Command\IncrDecr::decr($this->sequence->next(), $key, $delta))->await($cancellation);
     }
 
     public function delete(Key $key, Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->queueRequest(Request::delete($key))->await($cancellation);
+        $this->push(new Command\Delete($this->sequence->next(), $key))->await($cancellation);
     }
 
     public function touch(Key $key, ?Expiration $expiration = null, Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->queueRequest(Request::touch($key, new Item('', expiration: $expiration)))->await($cancellation);
+        $this->push(new Command\Touch($this->sequence->next(), $key, $expiration ?: Expiration::fromSeconds(0)))->await($cancellation);
     }
 
     public function stats(Cancellation $cancellation = new NullCancellation()): iterable
@@ -142,26 +140,24 @@ final class BinaryProtocol implements Protocol
 
     public function flush(Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->queueRequest(Request::flush())->await($cancellation);
+        $this->push(Command\Noop::flush($this->sequence->next()))->await($cancellation);
     }
 
     /**
      * @template T
-     * @param Request<T> $request
+     * @param Command<T> $command
      * @return Future<T>
      * @throws ConnectionIsClosed
      */
-    private function queueRequest(Request $request): Future
+    private function push(Command $command): Future
     {
         /** @var DeferredFuture<T> $deferred */
         $deferred = new DeferredFuture();
 
-        $request = $request->withId($this->sequence->next());
-
         try {
             $this->queue->push([
-                new Completion($deferred, $request->responseParser()),
-                $request,
+                new Completion($deferred, $command),
+                $command,
             ]);
         } catch (DisposedException $e) {
             throw new ConnectionIsClosed($e->getMessage(), previous: $e);
@@ -171,9 +167,9 @@ final class BinaryProtocol implements Protocol
     }
 
     /**
-     * @param ConcurrentIterator<array{Completion, Request}> $iterator
+     * @param ConcurrentIterator<array{Completion, Command}> $iterator
      */
-    private function sendRequests(ConcurrentIterator $iterator): void
+    private function sendCommands(ConcurrentIterator $iterator): void
     {
         while ($this->running) {
             $this->connection->unreference();
@@ -181,12 +177,12 @@ final class BinaryProtocol implements Protocol
             while ($iterator->continue()) {
                 $this->connection->reference();
 
-                [$completion, $request] = $iterator->getValue();
+                [$completion, $command] = $iterator->getValue();
 
-                $this->pending[$request->id] = $completion;
+                $this->pending[$command->id()] = $completion;
 
                 try {
-                    $this->connection->write($request);
+                    $this->connection->write($command);
                 } catch (\Throwable $e) {
                     $completion->error($e);
 

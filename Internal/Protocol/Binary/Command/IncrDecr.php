@@ -79,6 +79,6 @@ final class IncrDecr extends Command
 
     protected function doParseResponse(Response $response): int
     {
-        return $response->value !== null ? endian::network->unpackUint64($response->value) : 0;
+        return $response->value !== null && $response->value !== '' ? endian::network->unpackUint64($response->value) : 0;
     }
 }

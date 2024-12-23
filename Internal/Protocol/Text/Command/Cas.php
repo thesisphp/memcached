@@ -27,7 +27,7 @@ final class Cas implements Command
             $this->key,
             $this->item->flags,
             $this->item->expiration?->value ?? 0,
-            \strlen($this->item->value),
+            \strlen((string) $this->item->value),
             $this->item->casId,
             $this->item->value,
         );
