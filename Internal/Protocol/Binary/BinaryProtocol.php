@@ -56,9 +56,6 @@ final class BinaryProtocol implements Protocol
         return new self(new Connection($socket));
     }
 
-    /**
-     * @throws ConnectionIsClosed
-     */
     public function version(Cancellation $cancellation = new NullCancellation()): string
     {
         return $this->push(new Command\Version($this->sequence->next()))->await($cancellation);
@@ -85,7 +82,9 @@ final class BinaryProtocol implements Protocol
 
     public function gets(array $keys, Cancellation $cancellation = new NullCancellation()): iterable
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        if (\count($keys) > 0) {
+            yield from $this->push(new Command\Gets($this->sequence->next(), $keys))->await($cancellation);
+        }
     }
 
     public function set(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void
@@ -203,15 +202,13 @@ final class BinaryProtocol implements Protocol
 
     private function resolveCompletions(): void
     {
-        while ($this->running) {
-            while (($response = $this->connection->read()) !== null) {
-                $id = $response->header->opaque;
+        while ($this->running && ($response = $this->connection->read()) !== null) {
+            $id = $response->header->opaque;
 
-                $completion = $this->pending[$id] ?? null;
-                $completion?->complete($response);
+            $completion = $this->pending[$id] ?? null;
+            $completion?->complete($response);
 
-                unset($this->pending[$id]);
-            }
+            unset($this->pending[$id]);
         }
     }
 

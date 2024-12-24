@@ -17,11 +17,16 @@ use Typhoon\Memcached\Exception\MemcachedServerError;
  */
 final class Response
 {
+    /**
+     * @param list<self> $responses
+     */
     public function __construct(
+        public readonly ReadFrom $reader,
         public readonly Header $header,
         public readonly ?string $extras = null,
         public readonly ?string $key = null,
         public readonly ?string $value = null,
+        public readonly array $responses = [],
     ) {}
 
     /**
@@ -29,14 +34,15 @@ final class Response
      */
     public static function read(ReadFrom $reader): self
     {
-        $header = Header::read($reader);
+        $response = self::doParse($reader);
 
-        return new self(
-            $header,
-            extras: $header->extrasLength > 0 ? $reader->read($header->extrasLength) : null,
-            key: $header->keyLength > 0 ? $reader->read($header->keyLength) : null,
-            value: ($valueLength = $header->totalBodyLength - $header->keyLength - $header->extrasLength) > 0 ? $reader->read($valueLength) : null,
-        );
+        if ($response->header->opcode->iterable()) {
+            $response = $response->withResponses(
+                self::parseIterable($reader),
+            );
+        }
+
+        return $response;
     }
 
     /**
@@ -69,5 +75,56 @@ final class Response
         if ($exception !== null) {
             throw $exception;
         }
+    }
+
+    /**
+     * @param list<self> $responses
+     */
+    private function withResponses(array $responses): self
+    {
+        return new self(
+            $this->reader,
+            $this->header,
+            $this->extras,
+            $this->key,
+            $this->value,
+            $responses,
+        );
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    private static function doParse(ReadFrom $reader): self
+    {
+        $header = Header::read($reader);
+
+        return new self(
+            $reader,
+            $header,
+            extras: $header->extrasLength > 0 ? $reader->read($header->extrasLength) : null,
+            key: $header->keyLength > 0 ? $reader->read($header->keyLength) : null,
+            value: ($valueLength = $header->totalBodyLength - $header->keyLength - $header->extrasLength) > 0 ? $reader->read($valueLength) : null,
+        );
+    }
+
+    /**
+     * @return list<self>
+     * @throws \Throwable
+     */
+    private static function parseIterable(ReadFrom $reader): array
+    {
+        $responses = [];
+
+        while (true) {
+            $response = self::doParse($reader);
+            if ($response->header->opcode === Opcode::Noop) {
+                break;
+            }
+
+            $responses[] = $response;
+        }
+
+        return $responses;
     }
 }

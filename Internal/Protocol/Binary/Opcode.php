@@ -28,4 +28,12 @@ enum Opcode: int
     case Touch = 0x1C;
     case Auth = 0x21;
     case Verbosity = 0x1B;
+
+    public function iterable(): bool
+    {
+        return match ($this) {
+            self::GetKQ => true,
+            default => false,
+        };
+    }
 }

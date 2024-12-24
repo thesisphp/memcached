@@ -56,6 +56,8 @@ interface Protocol
     public function set(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void;
 
     /**
+     * Store this data, but only if the server doesn't already hold data for this key.
+     *
      * @throws ConnectionIsClosed
      * @throws KeyNotStored
      * @throws KeyAlreadyExists
@@ -63,6 +65,8 @@ interface Protocol
     public function add(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void;
 
     /**
+     * Store this data, but only if the server does already hold data for this key.
+     *
      * @throws ConnectionIsClosed
      * @throws KeyNotStored
      * @throws KeyNotFound
@@ -70,18 +74,26 @@ interface Protocol
     public function replace(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void;
 
     /**
+     * Add this data to an existing key after existing data.
+     *
      * @throws ConnectionIsClosed
      * @throws KeyNotStored
+     * @throws KeyNotFound
      */
     public function append(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void;
 
     /**
+     * Add this data to an existing key before existing data.
+     *
      * @throws ConnectionIsClosed
      * @throws KeyNotStored
+     * @throws KeyNotFound
      */
     public function prepend(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void;
 
     /**
+     * Store this data but only if no one else has updated since I last fetched it.
+     *
      * @throws ConnectionIsClosed
      * @throws KeyAlreadyExists
      * @throws KeyNotFound
@@ -109,7 +121,10 @@ interface Protocol
     public function delete(Key $key, Cancellation $cancellation = new NullCancellation()): void;
 
     /**
+     * Used to update the expiration time of an existing item without fetching it.
+     *
      * @throws ConnectionIsClosed
+     * @throws KeyNotFound
      */
     public function touch(Key $key, ?Expiration $expiration = null, Cancellation $cancellation = new NullCancellation()): void;
 
