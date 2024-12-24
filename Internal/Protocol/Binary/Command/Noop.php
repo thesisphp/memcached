@@ -7,7 +7,6 @@ namespace Typhoon\Memcached\Internal\Protocol\Binary\Command;
 use Typhoon\ByteOrder\WriteTo;
 use Typhoon\Memcached\Internal\Protocol\Binary\Command;
 use Typhoon\Memcached\Internal\Protocol\Binary\Header;
-use Typhoon\Memcached\Internal\Protocol\Binary\Magic;
 use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
 
 /**
@@ -48,8 +47,7 @@ final class Noop extends Command
 
     public function write(WriteTo $writer): void
     {
-        $header = new Header(
-            Magic::REQUEST,
+        $header = Header::asRequest(
             $this->opcode,
             $this->id,
         );

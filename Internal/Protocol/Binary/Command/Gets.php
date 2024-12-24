@@ -8,7 +8,6 @@ use Typhoon\ByteOrder\WriteTo;
 use Typhoon\Endian\endian;
 use Typhoon\Memcached\Internal\Protocol\Binary\Command;
 use Typhoon\Memcached\Internal\Protocol\Binary\Header;
-use Typhoon\Memcached\Internal\Protocol\Binary\Magic;
 use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
 use Typhoon\Memcached\Internal\Protocol\Binary\Response;
 use Typhoon\Memcached\Item;
@@ -41,8 +40,7 @@ final class Gets extends Command
         foreach ($this->keys as $key) {
             $keyValue = (string) $key;
 
-            $header = new Header(
-                Magic::REQUEST,
+            $header = Header::asRequest(
                 Opcode::GetKQ,
                 $this->id,
                 keyLength: \strlen($keyValue),
@@ -54,8 +52,7 @@ final class Gets extends Command
             $writer->write($keyValue);
         }
 
-        $header = new Header(
-            Magic::REQUEST,
+        $header = Header::asRequest(
             Opcode::Noop,
             $this->id,
         );

@@ -7,7 +7,6 @@ namespace Typhoon\Memcached\Internal\Protocol\Binary\Command;
 use Typhoon\ByteOrder\WriteTo;
 use Typhoon\Memcached\Internal\Protocol\Binary\Command;
 use Typhoon\Memcached\Internal\Protocol\Binary\Header;
-use Typhoon\Memcached\Internal\Protocol\Binary\Magic;
 use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
 use Typhoon\Memcached\Internal\Protocol\Binary\Response;
 
@@ -32,8 +31,7 @@ final class Version extends Command
 
     public function write(WriteTo $writer): void
     {
-        $header = new Header(
-            Magic::REQUEST,
+        $header = Header::asRequest(
             Opcode::Version,
             $this->id,
         );

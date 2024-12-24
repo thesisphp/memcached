@@ -8,7 +8,6 @@ use Typhoon\ByteOrder\WriteTo;
 use Typhoon\Endian\endian;
 use Typhoon\Memcached\Internal\Protocol\Binary\Command;
 use Typhoon\Memcached\Internal\Protocol\Binary\Header;
-use Typhoon\Memcached\Internal\Protocol\Binary\Magic;
 use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
 use Typhoon\Memcached\Internal\Protocol\Binary\Response;
 use Typhoon\Memcached\Key;
@@ -58,8 +57,7 @@ final class IncrDecr extends Command
     {
         $keyValue = (string) $this->key;
 
-        $header = new Header(
-            Magic::REQUEST,
+        $header = Header::asRequest(
             $this->opcode,
             $this->id,
             keyLength: \strlen($keyValue),

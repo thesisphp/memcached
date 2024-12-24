@@ -19,6 +19,32 @@ final class Header
      * @param non-negative-int $keyLength
      * @param non-negative-int $extrasLength
      * @param non-negative-int $totalBodyLength
+     * @param non-negative-int $cas
+     */
+    public static function asRequest(
+        Opcode $opcode,
+        int $opaque,
+        int $keyLength = 0,
+        int $extrasLength = 0,
+        int $totalBodyLength = 0,
+        int $cas = 0,
+    ): self {
+        return new self(
+            magic: Magic::REQUEST,
+            opcode: $opcode,
+            opaque: $opaque,
+            keyLength: $keyLength,
+            extrasLength: $extrasLength,
+            totalBodyLength: $totalBodyLength,
+            cas: $cas,
+        );
+    }
+
+    /**
+     * @param non-negative-int $opaque
+     * @param non-negative-int $keyLength
+     * @param non-negative-int $extrasLength
+     * @param non-negative-int $totalBodyLength
      * @param non-negative-int $vbucketIdOrStatus
      * @param non-negative-int $cas
      */
