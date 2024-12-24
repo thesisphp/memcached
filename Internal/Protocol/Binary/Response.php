@@ -31,11 +31,11 @@ final class Response
     {
         $header = Header::read($reader);
 
-        $size = $header->totalBodyLength - $header->keyLength - $header->extrasLength;
-
         return new self(
             $header,
-            value: $size > 0 ? $reader->read($size) : null,
+            extras: $header->extrasLength > 0 ? $reader->read($header->extrasLength) : null,
+            key: $header->keyLength > 0 ? $reader->read($header->keyLength) : null,
+            value: ($valueLength = $header->totalBodyLength - $header->keyLength - $header->extrasLength) > 0 ? $reader->read($valueLength) : null,
         );
     }
 

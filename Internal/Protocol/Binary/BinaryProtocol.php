@@ -14,6 +14,7 @@ use Amp\Pipeline\Queue;
 use Amp\Socket\Socket;
 use Revolt\EventLoop;
 use Typhoon\Memcached\Exception\ConnectionIsClosed;
+use Typhoon\Memcached\Exception\KeyNotFound;
 use Typhoon\Memcached\Expiration;
 use Typhoon\Memcached\Internal\Protocol\Protocol;
 use Typhoon\Memcached\Item;
@@ -75,7 +76,11 @@ final class BinaryProtocol implements Protocol
 
     public function get(Key $key, Cancellation $cancellation = new NullCancellation()): ?Item
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        try {
+            return $this->push(new Command\Get($this->sequence->next(), $key))->await($cancellation);
+        } catch (KeyNotFound) {
+            return null;
+        }
     }
 
     public function gets(array $keys, Cancellation $cancellation = new NullCancellation()): iterable
