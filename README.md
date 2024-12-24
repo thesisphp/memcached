@@ -21,6 +21,8 @@ $client = Memcached\connect('127.0.0.1:11211?proto=text'); // connect via `text`
 $client = Memcached\connect('127.0.0.1:11211?proto=binary'); // connect via `binary` protocol
 ```
 
+Without specifying a `proto`, `text` protocol will be used.
+
 ## Commands
 - [Set](#set)
 - [Add](#add)
