@@ -1,26 +1,8 @@
 {
     "name": "typhoon/memcached",
     "description": "Asynchronous (fiber based) client for Memcached.",
-    "type": "library",
-    "require": {
-        "php": "^8.1",
-        "amphp/socket": "^2.3",
-        "amphp/amp": "^3.0",
-        "amphp/pipeline": "^1.2",
-        "typhoon/byte-buffer": "*",
-        "typhoon/byte-order": "*",
-        "typhoon/amp-bridge": "*"
-    },
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Typhoon\\Memcached\\": ""
-        },
-        "files": [
-            "functions.php",
-            "Internal/functions.php"
-        ]
-    },
+    "type": "library",
     "authors": [
         {
             "name": "kafkiansky",
@@ -35,5 +17,23 @@
             "homepage": "https://github.com/orgs/typhoon-php/people"
         }
     ],
-    "minimum-stability": "stable"
+    "require": {
+        "php": "^8.1",
+        "amphp/amp": "^3.0",
+        "amphp/pipeline": "^1.2",
+        "amphp/socket": "^2.3",
+        "typhoon/amp-bridge": "*",
+        "typhoon/byte-buffer": "*",
+        "typhoon/byte-order": "*"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Typhoon\\Memcached\\": ""
+        },
+        "files": [
+            "functions.php",
+            "Internal/functions.php"
+        ]
+    }
 }
