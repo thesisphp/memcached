@@ -11,6 +11,8 @@ use Amp\NullCancellation;
 use Amp\Socket\Socket;
 use Revolt\EventLoop;
 use Typhoon\Memcached\Exception\ConnectionIsClosed;
+use Typhoon\Memcached\Exception\KeyAlreadyExists;
+use Typhoon\Memcached\Exception\KeyNotStored;
 use Typhoon\Memcached\Expiration;
 use Typhoon\Memcached\Internal\Protocol\Protocol;
 use Typhoon\Memcached\Item;
@@ -76,7 +78,11 @@ final class TextProtocol implements Protocol
 
     public function add(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void
     {
-        $this->push(Command\Store::add($key, $item))->await($cancellation);
+        try {
+            $this->push(Command\Store::add($key, $item))->await($cancellation);
+        } catch (KeyNotStored) {
+            throw new KeyAlreadyExists();
+        }
     }
 
     public function replace(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void

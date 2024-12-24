@@ -139,7 +139,7 @@ final class BinaryProtocol implements Protocol
 
     public function stats(Cancellation $cancellation = new NullCancellation()): iterable
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        yield from $this->push(new Command\Stats($this->sequence->next()))->await($cancellation);
     }
 
     public function flush(Cancellation $cancellation = new NullCancellation()): void

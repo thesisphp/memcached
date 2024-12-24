@@ -15,7 +15,11 @@
     "autoload": {
         "psr-4": {
             "Typhoon\\Memcached\\": ""
-        }
+        },
+        "files": [
+            "functions.php",
+            "Internal/functions.php"
+        ]
     },
     "authors": [
         {

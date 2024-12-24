@@ -13,6 +13,7 @@ use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
 use Typhoon\Memcached\Internal\Protocol\Binary\Response;
 use Typhoon\Memcached\Item;
 use Typhoon\Memcached\Key;
+use function Typhoon\Memcached\Internal\isNotEmptyString;
 
 /**
  * @internal
@@ -67,7 +68,7 @@ final class Gets extends Command
         $items = [];
 
         foreach ([$response, ...$response->responses] as $it) {
-            if ($it->key !== null && $it->key !== '') {
+            if (isNotEmptyString($it->key)) {
                 $items[$it->key] = self::parseItem($it);
             }
         }

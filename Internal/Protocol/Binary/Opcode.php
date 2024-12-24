@@ -32,7 +32,7 @@ enum Opcode: int
     public function iterable(): bool
     {
         return match ($this) {
-            self::GetKQ => true,
+            self::GetKQ, self::Stat => true,
             default => false,
         };
     }

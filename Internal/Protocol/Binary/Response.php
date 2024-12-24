@@ -118,7 +118,7 @@ final class Response
 
         while (true) {
             $response = self::doParse($reader);
-            if ($response->header->opcode === Opcode::Noop) {
+            if ($response->header->opcode === Opcode::Noop || ($response->key === null && $response->value === null)) {
                 break;
             }
 
