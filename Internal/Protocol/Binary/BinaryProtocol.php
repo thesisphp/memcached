@@ -47,8 +47,8 @@ final class BinaryProtocol implements Protocol
         $queue = new Queue();
         $this->queue = $queue;
 
-        EventLoop::queue($this->sendCommands(...), $queue->iterate());
-        EventLoop::queue($this->resolveCompletions(...));
+        $this->sendCommands($queue->iterate());
+        $this->resolveCompletions();
     }
 
     public static function fromSocket(Socket $socket): self
@@ -175,41 +175,53 @@ final class BinaryProtocol implements Protocol
      */
     private function sendCommands(ConcurrentIterator $iterator): void
     {
-        while ($this->running) {
-            $this->connection->unreference();
+        $connection = &$this->connection;
+        $running = &$this->running;
+        $pending = &$this->pending;
 
-            while ($iterator->continue()) {
-                $this->connection->reference();
+        EventLoop::queue(static function () use (&$connection, &$running, &$pending, $iterator): void {
+            while ($running) {
+                $connection->unreference();
 
-                [$completion, $command] = $iterator->getValue();
+                while ($iterator->continue()) {
+                    $connection->reference();
 
-                $this->pending[$command->id()] = $completion;
+                    [$completion, $command] = $iterator->getValue();
 
-                try {
-                    $this->connection->write($command);
-                } catch (\Throwable $e) {
-                    $completion->error($e);
+                    $pending[$command->id()] = $completion;
 
-                    foreach ($iterator->getIterator() as [$completion]) {
+                    try {
+                        $connection->write($command);
+                    } catch (\Throwable $e) {
                         $completion->error($e);
-                    }
 
-                    $this->running = false;
+                        foreach ($iterator->getIterator() as [$completion]) {
+                            $completion->error($e);
+                        }
+
+                        $running = false;
+                    }
                 }
             }
-        }
+        });
     }
 
     private function resolveCompletions(): void
     {
-        while ($this->running && ($response = $this->connection->read()) !== null) {
-            $id = $response->header->opaque;
+        $running = &$this->running;
+        $connection = &$this->connection;
+        $pending = &$this->pending;
 
-            $completion = $this->pending[$id] ?? null;
-            $completion?->complete($response);
+        EventLoop::queue(static function () use (&$connection, &$pending, &$running): void {
+            while ($running && ($response = $connection->read()) !== null) {
+                $id = $response->header->opaque;
 
-            unset($this->pending[$id]);
-        }
+                $completion = $pending[$id] ?? null;
+                $completion?->complete($response);
+
+                unset($pending[$id]);
+            }
+        });
     }
 
     public function close(): void
