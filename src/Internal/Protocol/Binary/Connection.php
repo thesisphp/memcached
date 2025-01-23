@@ -2,23 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary;
+namespace Thesis\Memcached\Internal\Protocol\Binary;
 
 use Amp\ByteStream\ResourceStream;
 use Amp\Pipeline\ConcurrentIterator;
 use Amp\Pipeline\Queue;
 use Amp\Socket\Socket;
 use Revolt\EventLoop;
-use Typhoon\AmpBridge\AmpReaderWriter;
-use Typhoon\ByteBuffer\BufferedReader;
-use Typhoon\ByteBuffer\BufferedWriter;
-use Typhoon\ByteOrder\ReaderWriter;
-use Typhoon\Memcached\Exception\ConnectionIsClosed;
-use Typhoon\Memcached\Exception\WriteIsFailed;
+use Thesis\AmpBridge\ReaderWriter as AmpReaderWriter;
+use Thesis\ByteBuffer\BufferedReaderWriter;
+use Thesis\ByteReaderWriter\ReaderWriter;
+use Thesis\Memcached\Exception\ConnectionIsClosed;
+use Thesis\Memcached\Exception\WriteIsFailed;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  */
 final class Connection
 {
@@ -31,13 +29,8 @@ final class Connection
 
     public function __construct(Socket $socket)
     {
-        $amp = new AmpReaderWriter($socket);
-
         $this->socket = $socket;
-        $this->buffer = $buffer = new ReaderWriter(
-            new BufferedReader($amp),
-            new BufferedWriter($amp),
-        );
+        $this->buffer = $buffer = new ReaderWriter(new BufferedReaderWriter(new AmpReaderWriter($socket)));
 
         /** @var Queue<Response> $queue */
         $queue = new Queue();
@@ -56,9 +49,7 @@ final class Connection
                 $queue->complete();
             }
 
-            if (!$socket->isClosed()) {
-                $socket->close();
-            }
+            $socket->close();
         });
     }
 

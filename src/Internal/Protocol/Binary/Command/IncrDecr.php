@@ -2,19 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary\Command;
+namespace Thesis\Memcached\Internal\Protocol\Binary\Command;
 
-use Typhoon\ByteOrder\WriteTo;
-use Typhoon\Endian\endian;
-use Typhoon\Memcached\Internal\Protocol\Binary\Command;
-use Typhoon\Memcached\Internal\Protocol\Binary\Header;
-use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
-use Typhoon\Memcached\Internal\Protocol\Binary\Response;
-use Typhoon\Memcached\Key;
+use Thesis\ByteOrder\WriteTo;
+use Thesis\Endian\endian;
+use Thesis\Memcached\Internal\Protocol\Binary\Command;
+use Thesis\Memcached\Internal\Protocol\Binary\Header;
+use Thesis\Memcached\Internal\Protocol\Binary\Opcode;
+use Thesis\Memcached\Internal\Protocol\Binary\Response;
+use Thesis\Memcached\Key;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-extends Command<int>
  */
 final class IncrDecr extends Command
@@ -75,7 +74,7 @@ final class IncrDecr extends Command
         $writer->write($keyValue);
     }
 
-    protected function doParseResponse(Response $response): int
+    public function parseResponse(Response $response): int
     {
         return $response->value !== null && $response->value !== '' ? endian::network->unpackUint64($response->value) : 0;
     }

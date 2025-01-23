@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary;
+namespace Thesis\Memcached\Internal\Protocol\Binary;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
- * @psalm-type CorrelationId = int<0, 4294967295>
+ * @phpstan-type CorrelationId = int<0, 4294967295>
  */
 final class CorrelationIdGenerator
 {

@@ -2,23 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol;
+namespace Thesis\Memcached\Internal\Protocol;
 
 use Amp\Cancellation;
 use Amp\NullCancellation;
-use Typhoon\Memcached\Exception\ConnectionIsClosed;
-use Typhoon\Memcached\Exception\KeyAlreadyExists;
-use Typhoon\Memcached\Exception\KeyNotFound;
-use Typhoon\Memcached\Exception\KeyNotStored;
-use Typhoon\Memcached\Exception\MemcachedClientError;
-use Typhoon\Memcached\Expiration;
-use Typhoon\Memcached\Item;
-use Typhoon\Memcached\Key;
-use Typhoon\Memcached\Stat;
+use Thesis\Memcached\Exception\ConnectionIsClosed;
+use Thesis\Memcached\Exception\KeyAlreadyExists;
+use Thesis\Memcached\Exception\KeyNotFound;
+use Thesis\Memcached\Exception\KeyNotStored;
+use Thesis\Memcached\Exception\MemcachedClientError;
+use Thesis\Memcached\Expiration;
+use Thesis\Memcached\Item;
+use Thesis\Memcached\Key;
+use Thesis\Memcached\Stat;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  */
 interface Protocol
 {
@@ -28,7 +27,7 @@ interface Protocol
     public function version(Cancellation $cancellation = new NullCancellation()): string;
 
     /**
-     * @psalm-param non-negative-int $level
+     * @param non-negative-int $level
      * @throws ConnectionIsClosed
      */
     public function verbosity(int $level, Cancellation $cancellation = new NullCancellation()): void;
@@ -101,7 +100,7 @@ interface Protocol
     public function cas(Key $key, Item $item, Cancellation $cancellation = new NullCancellation()): void;
 
     /**
-     * @psalm-param non-negative-int $delta
+     * @param non-negative-int $delta
      * @throws ConnectionIsClosed
      * @throws MemcachedClientError
      * @throws KeyNotFound
@@ -109,7 +108,7 @@ interface Protocol
     public function incr(Key $key, int $delta, Cancellation $cancellation = new NullCancellation()): int;
 
     /**
-     * @psalm-param non-negative-int $delta
+     * @param non-negative-int $delta
      * @throws ConnectionIsClosed
      * @throws MemcachedClientError
      */

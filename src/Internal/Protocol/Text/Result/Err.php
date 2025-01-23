@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text\Result;
+namespace Thesis\Memcached\Internal\Protocol\Text\Result;
 
 use Amp\DeferredFuture;
-use Typhoon\Memcached\Internal\Protocol\Text\Result;
+use Thesis\Memcached\Internal\Protocol\Text\Result;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-extends Result<\Throwable>
  */
 final class Err extends Result

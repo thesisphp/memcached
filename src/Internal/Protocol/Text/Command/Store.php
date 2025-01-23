@@ -2,22 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text\Command;
+namespace Thesis\Memcached\Internal\Protocol\Text\Command;
 
-use Typhoon\Memcached\Internal\Protocol\Text\Command;
-use Typhoon\Memcached\Item;
-use Typhoon\Memcached\Key;
+use Thesis\Memcached\Internal\Protocol\Text\Command;
+use Thesis\Memcached\Item;
+use Thesis\Memcached\Key;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
- * @psalm-type CommandName = 'set'|'add'|'replace'|'append'|'prepend'
+ * @phpstan-type CommandName = 'set'|'add'|'replace'|'append'|'prepend'
  * @template-implements Command<void>
  */
 final class Store implements Command
 {
     /**
-     * @psalm-param CommandName $commandName
+     * @param CommandName $commandName
      */
     private function __construct(
         private readonly string $commandName,
@@ -57,7 +56,7 @@ final class Store implements Command
             $this->commandName,
             $this->key,
             $this->item->flags,
-            $this->item->expiration?->value ?? 0,
+            $this->item->expiration->value ?? 0,
             \strlen((string) $this->item->value),
             $this->item->value,
         );

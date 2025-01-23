@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary;
+namespace Thesis\Memcached\Internal\Protocol\Binary;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-covariant T
  */
 abstract class Command implements Writable
@@ -18,21 +17,6 @@ abstract class Command implements Writable
 
     /**
      * @return T
-     * @throws \Throwable
      */
-    final public function parseResponse(Response $response)
-    {
-        $response->throwOnError();
-
-        return $this->doParseResponse($response);
-    }
-
-    /**
-     * @return T
-     * @throws \Throwable
-     */
-    protected function doParseResponse(Response $response): mixed
-    {
-        return null;
-    }
+    abstract public function parseResponse(Response $response);
 }

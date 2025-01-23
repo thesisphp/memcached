@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text;
+namespace Thesis\Memcached\Internal\Protocol\Text;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  */
 final class Response
 {
@@ -16,6 +15,7 @@ final class Response
     ) {}
 
     /**
+     * @param Command<mixed> $_command
      * @throws \Throwable
      */
     public function parse(Command $_command): Result

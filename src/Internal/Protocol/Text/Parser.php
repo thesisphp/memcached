@@ -2,21 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text;
+namespace Thesis\Memcached\Internal\Protocol\Text;
 
-use Typhoon\Memcached\Exception\KeyAlreadyExists;
-use Typhoon\Memcached\Exception\KeyNotFound;
-use Typhoon\Memcached\Exception\KeyNotStored;
-use Typhoon\Memcached\Exception\MemcachedClientError;
-use Typhoon\Memcached\Exception\MemcachedServerError;
-use Typhoon\Memcached\Item;
-use Typhoon\Memcached\Stat;
+use Thesis\Memcached\Exception\KeyAlreadyExists;
+use Thesis\Memcached\Exception\KeyNotFound;
+use Thesis\Memcached\Exception\KeyNotStored;
+use Thesis\Memcached\Exception\MemcachedClientError;
+use Thesis\Memcached\Exception\MemcachedServerError;
+use Thesis\Memcached\Item;
+use Thesis\Memcached\Stat;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
- * @psalm-type ItemHeaderFormat = array{0: non-empty-string, 1: non-empty-string, 2: numeric-string, 3: numeric-string, 4?: numeric-string}
- * @psalm-type StatHeaderFormat = array{0: non-empty-string, 1: non-empty-string}
+ * @phpstan-type ItemHeaderFormat = array{0: non-empty-string, 1: non-empty-string, 2: numeric-string, 3: numeric-string, 4?: numeric-string}
+ * @phpstan-type StatHeaderFormat = array{0: non-empty-string, 1: non-empty-string}
  */
 final class Parser
 {

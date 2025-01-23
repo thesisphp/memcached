@@ -3,7 +3,7 @@
 ## Installation
 
 ```shell
-composer require typhoon/memcached
+composer require thesis/memcached
 ```
 
 ## Supported protocols
@@ -15,7 +15,7 @@ composer require typhoon/memcached
 ```php
 <?php
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211?proto=text'); // connect via `text` protocol
 $client = Memcached\connect('127.0.0.1:11211?proto=binary'); // connect via `binary` protocol
@@ -49,7 +49,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->set(new Memcached\Key('x'), new Memcached\Item('y', expiration: Memcached\Expiration::fromSeconds(10)));
@@ -64,7 +64,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->add(new Memcached\Key('x'), new Memcached\Item('y'));
@@ -79,7 +79,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->append(new Memcached\Key('x'), new Memcached\Item('y'));
@@ -94,7 +94,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->prepend(new Memcached\Key('x'), new Memcached\Item('y'));
@@ -109,7 +109,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->replace(new Memcached\Key('x'), new Memcached\Item('y'));
@@ -124,7 +124,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $item = $client->get(new Memcached\Key('x'));
@@ -144,7 +144,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 
@@ -165,7 +165,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->set(new Memcached\Key('x'), new Memcached\Item('y'));
@@ -181,7 +181,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->set(new Memcached\Key('x'), new Memcached\Item('y', expiration: Memcached\Expiration::fromSeconds(10)));
@@ -197,7 +197,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->set(new Memcached\Key('x'), new Memcached\Item('1'));
@@ -213,7 +213,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->set(new Memcached\Key('x'), new Memcached\Item('1'));
@@ -229,7 +229,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 
@@ -252,7 +252,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->set(new Memcached\Key('x'), new Memcached\Item('y'));
@@ -269,7 +269,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 $client->verbosity(10);
@@ -285,7 +285,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Typhoon\Memcached;
+use Thesis\Memcached;
 
 $client = Memcached\connect('127.0.0.1:11211');
 foreach ($client->stats() as $name => $stat) {

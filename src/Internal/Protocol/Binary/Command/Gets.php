@@ -2,21 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary\Command;
+namespace Thesis\Memcached\Internal\Protocol\Binary\Command;
 
-use Typhoon\ByteOrder\WriteTo;
-use Typhoon\Endian\endian;
-use Typhoon\Memcached\Internal\Protocol\Binary\Command;
-use Typhoon\Memcached\Internal\Protocol\Binary\Header;
-use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
-use Typhoon\Memcached\Internal\Protocol\Binary\Response;
-use Typhoon\Memcached\Item;
-use Typhoon\Memcached\Key;
-use function Typhoon\Memcached\Internal\isNotEmptyString;
+use Thesis\ByteOrder\WriteTo;
+use Thesis\Endian\endian;
+use Thesis\Memcached\Internal\Protocol\Binary\Command;
+use Thesis\Memcached\Internal\Protocol\Binary\Header;
+use Thesis\Memcached\Internal\Protocol\Binary\Opcode;
+use Thesis\Memcached\Internal\Protocol\Binary\Response;
+use Thesis\Memcached\Item;
+use Thesis\Memcached\Key;
+use function Thesis\Memcached\Internal\isNotEmptyString;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-extends Command<array<non-empty-string, Item>>
  */
 final class Gets extends Command
@@ -60,7 +59,7 @@ final class Gets extends Command
         $header->write($writer);
     }
 
-    protected function doParseResponse(Response $response): array
+    public function parseResponse(Response $response): array
     {
         $items = [];
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached;
+namespace Thesis\Memcached;
 
 /**
  * @api

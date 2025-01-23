@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary;
+namespace Thesis\Memcached\Internal\Protocol\Binary;
 
-use Typhoon\ByteOrder\ReadFrom;
-use Typhoon\ByteOrder\WriteTo;
-use Typhoon\ByteReader\NotEnoughBytes;
+use Thesis\ByteOrder\ReadFrom;
+use Thesis\ByteOrder\WriteTo;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  */
 final class Header
 {
@@ -77,9 +75,6 @@ final class Header
             ->writeUint64($this->cas);
     }
 
-    /**
-     * @throws NotEnoughBytes
-     */
     public static function read(ReadFrom $reader): self
     {
         $magic = Magic::from($reader->readUint8());

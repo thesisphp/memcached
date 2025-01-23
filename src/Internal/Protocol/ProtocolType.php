@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol;
+namespace Thesis\Memcached\Internal\Protocol;
 
 use Amp\Socket\Socket;
-use Typhoon\Memcached\Internal\Protocol\Binary\BinaryProtocol;
-use Typhoon\Memcached\Internal\Protocol\Text\TextProtocol;
+use Thesis\Memcached\Internal\Protocol\Binary\BinaryProtocol;
+use Thesis\Memcached\Internal\Protocol\Text\TextProtocol;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  */
 enum ProtocolType: string
 {

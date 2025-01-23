@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal;
+namespace Thesis\Memcached\Internal;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
- * @psalm-assert-if-true non-empty-string $value
+ * @phpstan-assert-if-true non-empty-string $value
  */
 function isNotEmptyString(?string $value): bool
 {

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary\Command;
+namespace Thesis\Memcached\Internal\Protocol\Binary\Command;
 
-use Typhoon\ByteOrder\WriteTo;
-use Typhoon\Memcached\Internal\Protocol\Binary\Command;
-use Typhoon\Memcached\Internal\Protocol\Binary\Header;
-use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
+use Thesis\ByteOrder\WriteTo;
+use Thesis\Memcached\Internal\Protocol\Binary\Command;
+use Thesis\Memcached\Internal\Protocol\Binary\Header;
+use Thesis\Memcached\Internal\Protocol\Binary\Opcode;
+use Thesis\Memcached\Internal\Protocol\Binary\Response;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-extends Command<void>
  */
 final class Noop extends Command
@@ -54,4 +54,6 @@ final class Noop extends Command
 
         $header->write($writer);
     }
+
+    public function parseResponse(Response $response): void {}
 }

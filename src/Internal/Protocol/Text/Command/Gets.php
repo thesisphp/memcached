@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text\Command;
+namespace Thesis\Memcached\Internal\Protocol\Text\Command;
 
-use Typhoon\Memcached\Internal\Protocol\Text\Command;
-use Typhoon\Memcached\Item;
-use Typhoon\Memcached\Key;
+use Thesis\Memcached\Internal\Protocol\Text\Command;
+use Thesis\Memcached\Item;
+use Thesis\Memcached\Key;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-implements Command<array<non-empty-string, Item>>
  */
 final class Gets implements Command

@@ -2,20 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text\Command;
+namespace Thesis\Memcached\Internal\Protocol\Text\Command;
 
-use Typhoon\Memcached\Internal\Protocol\Text\Command;
-use Typhoon\Memcached\Key;
+use Thesis\Memcached\Internal\Protocol\Text\Command;
+use Thesis\Memcached\Key;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-implements Command<int>
  */
 final class Increment implements Command
 {
     /**
-     * @psalm-param non-negative-int $delta
+     * @param non-negative-int $delta
      */
     public function __construct(
         private readonly Key $key,

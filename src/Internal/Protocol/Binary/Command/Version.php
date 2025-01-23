@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary\Command;
+namespace Thesis\Memcached\Internal\Protocol\Binary\Command;
 
-use Typhoon\ByteOrder\WriteTo;
-use Typhoon\Memcached\Internal\Protocol\Binary\Command;
-use Typhoon\Memcached\Internal\Protocol\Binary\Header;
-use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
-use Typhoon\Memcached\Internal\Protocol\Binary\Response;
+use Thesis\ByteOrder\WriteTo;
+use Thesis\Memcached\Internal\Protocol\Binary\Command;
+use Thesis\Memcached\Internal\Protocol\Binary\Header;
+use Thesis\Memcached\Internal\Protocol\Binary\Opcode;
+use Thesis\Memcached\Internal\Protocol\Binary\Response;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-extends Command<string>
  */
 final class Version extends Command
@@ -39,7 +38,7 @@ final class Version extends Command
         $header->write($writer);
     }
 
-    protected function doParseResponse(Response $response): string
+    public function parseResponse(Response $response): string
     {
         return $response->value ?? '';
     }

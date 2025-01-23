@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached;
+namespace Thesis\Memcached;
 
-use Typhoon\Memcached\Exception\InvalidConfiguration;
-use Typhoon\Memcached\Internal\Protocol\ProtocolType;
+use Thesis\Memcached\Exception\InvalidConfiguration;
+use Thesis\Memcached\Internal\Protocol\ProtocolType;
 
 /**
  * @api
@@ -42,8 +42,8 @@ final class Config
 
         $protocolType = ProtocolType::TEXT;
 
-        if (isset($query['proto']) && $query['proto'] !== '') {
-            $protocolType = ProtocolType::tryFrom((string) $query['proto']) ?: throw InvalidConfiguration::incorrectProtocolType((string) $query['proto']);
+        if (isset($query['proto']) && \is_string($query['proto']) && $query['proto'] !== '') {
+            $protocolType = ProtocolType::tryFrom($query['proto']) ?: throw InvalidConfiguration::incorrectProtocolType((string) $query['proto']);
         }
 
         return new self(

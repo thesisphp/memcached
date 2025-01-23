@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary\Command;
+namespace Thesis\Memcached\Internal\Protocol\Binary\Command;
 
-use Typhoon\ByteOrder\WriteTo;
-use Typhoon\Memcached\Internal\Protocol\Binary\Command;
-use Typhoon\Memcached\Internal\Protocol\Binary\Header;
-use Typhoon\Memcached\Internal\Protocol\Binary\Opcode;
-use Typhoon\Memcached\Item;
-use Typhoon\Memcached\Key;
+use Thesis\ByteOrder\WriteTo;
+use Thesis\Memcached\Internal\Protocol\Binary\Command;
+use Thesis\Memcached\Internal\Protocol\Binary\Header;
+use Thesis\Memcached\Internal\Protocol\Binary\Opcode;
+use Thesis\Memcached\Internal\Protocol\Binary\Response;
+use Thesis\Memcached\Item;
+use Thesis\Memcached\Key;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-extends Command<void>
  */
 final class Change extends Command
@@ -63,6 +63,11 @@ final class Change extends Command
         $header->write($writer);
 
         $writer->write($keyValue);
-        $writer->write((string) $this->item->value);
+
+        if (($value = (string) $this->item->value) !== '') {
+            $writer->write($value);
+        }
     }
+
+    public function parseResponse(Response $response): void {}
 }

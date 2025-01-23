@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text;
+namespace Thesis\Memcached\Internal\Protocol\Text;
 
 use Amp\Cancellation;
 use Amp\DeferredFuture;
@@ -10,21 +10,20 @@ use Amp\Future;
 use Amp\NullCancellation;
 use Amp\Socket\Socket;
 use Revolt\EventLoop;
-use Typhoon\Memcached\Exception\ConnectionIsClosed;
-use Typhoon\Memcached\Exception\KeyAlreadyExists;
-use Typhoon\Memcached\Exception\KeyNotStored;
-use Typhoon\Memcached\Expiration;
-use Typhoon\Memcached\Internal\Protocol\Protocol;
-use Typhoon\Memcached\Item;
-use Typhoon\Memcached\Key;
+use Thesis\Memcached\Exception\ConnectionIsClosed;
+use Thesis\Memcached\Exception\KeyAlreadyExists;
+use Thesis\Memcached\Exception\KeyNotStored;
+use Thesis\Memcached\Expiration;
+use Thesis\Memcached\Internal\Protocol\Protocol;
+use Thesis\Memcached\Item;
+use Thesis\Memcached\Key;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  */
 final class TextProtocol implements Protocol
 {
-    /** @var \SplQueue<array{DeferredFuture, Command}> */
+    /** @var \SplQueue<array{DeferredFuture<mixed>, Command<mixed>}> */
     private readonly \SplQueue $queue;
 
     private bool $isAlive = false;
@@ -32,7 +31,7 @@ final class TextProtocol implements Protocol
     private function __construct(
         private readonly Connection $connection,
     ) {
-        /** @var \SplQueue<array{DeferredFuture, Command}> $queue */
+        /** @var \SplQueue<array{DeferredFuture<mixed>, Command<mixed>}> $queue */
         $queue = new \SplQueue();
         $this->queue = $queue;
     }
@@ -186,11 +185,12 @@ final class TextProtocol implements Protocol
         $this->isAlive = true;
 
         $isAlive = &$this->isAlive;
+        /** @phpstan-ignore property.readOnlyAssignByRef */
         $connection = &$this->connection;
         $queue = $this->queue;
 
         EventLoop::queue(static function () use (&$isAlive, &$connection, $queue): void {
-            /** @psalm-suppress RedundantCondition */
+            /** @phpstan-ignore while.alwaysTrue */
             while ($isAlive) {
                 while ($response = $connection->read()) {
                     [$deferred, $command] = $queue->shift();

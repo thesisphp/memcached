@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text\Command;
+namespace Thesis\Memcached\Internal\Protocol\Text\Command;
 
-use Typhoon\Memcached\Internal\Protocol\Text\Command;
-use Typhoon\Memcached\Key;
+use Thesis\Memcached\Internal\Protocol\Text\Command;
+use Thesis\Memcached\Key;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-implements Command<void>
  */
 final class Delete implements Command

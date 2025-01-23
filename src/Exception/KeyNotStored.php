@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Exception;
+namespace Thesis\Memcached\Exception;
 
-use Typhoon\Memcached\MemcachedException;
+use Thesis\Memcached\MemcachedException;
 
 /**
  * @api

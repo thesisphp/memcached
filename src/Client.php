@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached;
+namespace Thesis\Memcached;
 
 use Amp\Cancellation;
 use Amp\NullCancellation;
-use Typhoon\Memcached\Exception\ConnectionIsClosed;
-use Typhoon\Memcached\Exception\KeyAlreadyExists;
-use Typhoon\Memcached\Exception\KeyNotFound;
-use Typhoon\Memcached\Exception\KeyNotStored;
-use Typhoon\Memcached\Exception\MemcachedClientError;
-use Typhoon\Memcached\Internal\Protocol\Protocol;
+use Thesis\Memcached\Exception\ConnectionIsClosed;
+use Thesis\Memcached\Exception\KeyAlreadyExists;
+use Thesis\Memcached\Exception\KeyNotFound;
+use Thesis\Memcached\Exception\KeyNotStored;
+use Thesis\Memcached\Exception\MemcachedClientError;
+use Thesis\Memcached\Internal\Protocol\Protocol;
 
 /**
  * @api
@@ -20,7 +20,6 @@ final class Client
 {
     /**
      * @internal
-     * @psalm-internal Typhoon\Memcached
      */
     public function __construct(
         private readonly Protocol $protocol,
@@ -35,7 +34,7 @@ final class Client
     }
 
     /**
-     * @psalm-param non-negative-int $level
+     * @param non-negative-int $level
      * @throws ConnectionIsClosed
      */
     public function verbosity(int $level, Cancellation $cancellation = new NullCancellation()): void
@@ -136,7 +135,7 @@ final class Client
     }
 
     /**
-     * @psalm-param non-negative-int $delta
+     * @param non-negative-int $delta
      * @throws ConnectionIsClosed
      * @throws MemcachedClientError
      * @throws KeyNotFound
@@ -147,7 +146,7 @@ final class Client
     }
 
     /**
-     * @psalm-param non-negative-int $delta
+     * @param non-negative-int $delta
      * @throws ConnectionIsClosed
      * @throws MemcachedClientError
      */

@@ -2,18 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary;
+namespace Thesis\Memcached\Internal\Protocol\Binary;
 
-use Typhoon\ByteOrder\ReadFrom;
-use Typhoon\Memcached\Exception\KeyAlreadyExists;
-use Typhoon\Memcached\Exception\KeyNotFound;
-use Typhoon\Memcached\Exception\KeyNotStored;
-use Typhoon\Memcached\Exception\MemcachedClientError;
-use Typhoon\Memcached\Exception\MemcachedServerError;
+use Thesis\ByteOrder\ReadFrom;
+use Thesis\Memcached\Exception\KeyAlreadyExists;
+use Thesis\Memcached\Exception\KeyNotFound;
+use Thesis\Memcached\Exception\KeyNotStored;
+use Thesis\Memcached\Exception\MemcachedClientError;
+use Thesis\Memcached\Exception\MemcachedServerError;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  */
 final class Response
 {
@@ -52,7 +51,6 @@ final class Response
     {
         $status = ResponseStatus::from($this->header->vbucketIdOrStatus);
 
-        /** @var ?\Throwable $exception */
         $exception = match ($status) {
             ResponseStatus::KEY_EXISTS => new KeyAlreadyExists(),
             ResponseStatus::KEY_NOT_FOUND => new KeyNotFound(),

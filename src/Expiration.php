@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached;
+namespace Thesis\Memcached;
 
 /**
  * @api
@@ -10,7 +10,7 @@ namespace Typhoon\Memcached;
 final class Expiration
 {
     /**
-     * @psalm-param non-negative-int $value
+     * @param non-negative-int $value
      */
     private function __construct(
         public readonly int $value,
@@ -22,7 +22,7 @@ final class Expiration
     }
 
     /**
-     * @psalm-param non-negative-int $seconds
+     * @param non-negative-int $seconds
      */
     public static function fromSeconds(int $seconds): self
     {

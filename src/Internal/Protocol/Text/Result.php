@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text;
+namespace Thesis\Memcached\Internal\Protocol\Text;
 
 use Amp\DeferredFuture;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template T
- * @psalm-inheritors Result\Ok|Result\Err
  */
 abstract class Result
 {

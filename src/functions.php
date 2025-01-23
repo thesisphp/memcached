@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached;
+namespace Thesis\Memcached;
 
 use Amp\Cancellation;
 use Amp\CancelledException;
 use Amp\NullCancellation;
 use Amp\Socket;
-use Typhoon\Memcached\Exception\ConnectionIsFailed;
-use Typhoon\Memcached\Exception\InvalidConfiguration;
+use Thesis\Memcached\Exception\ConnectionIsFailed;
+use Thesis\Memcached\Exception\InvalidConfiguration;
 
 /**
  * @api

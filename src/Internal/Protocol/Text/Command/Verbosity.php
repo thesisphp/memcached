@@ -2,19 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text\Command;
+namespace Thesis\Memcached\Internal\Protocol\Text\Command;
 
-use Typhoon\Memcached\Internal\Protocol\Text\Command;
+use Thesis\Memcached\Internal\Protocol\Text\Command;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-implements Command<void>
  */
 final class Verbosity implements Command
 {
     /**
-     * @psalm-param non-negative-int $level
+     * @param non-negative-int $level
      */
     public function __construct(
         private readonly int $level,

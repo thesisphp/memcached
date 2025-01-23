@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text\Command;
+namespace Thesis\Memcached\Internal\Protocol\Text\Command;
 
-use Typhoon\Memcached\Internal\Protocol\Text\Command;
-use Typhoon\Memcached\Item;
-use Typhoon\Memcached\Key;
+use Thesis\Memcached\Internal\Protocol\Text\Command;
+use Thesis\Memcached\Item;
+use Thesis\Memcached\Key;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template-implements Command<void>
  */
 final class Cas implements Command
@@ -26,7 +25,7 @@ final class Cas implements Command
             "cas %s %d %d %d %d\r\n%s\r\n",
             $this->key,
             $this->item->flags,
-            $this->item->expiration?->value ?? 0,
+            $this->item->expiration->value ?? 0,
             \strlen((string) $this->item->value),
             $this->item->casId,
             $this->item->value,

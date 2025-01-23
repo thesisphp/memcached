@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary;
+namespace Thesis\Memcached\Internal\Protocol\Binary;
 
 use Amp\Cancellation;
 use Amp\DeferredFuture;
@@ -13,16 +13,15 @@ use Amp\Pipeline\DisposedException;
 use Amp\Pipeline\Queue;
 use Amp\Socket\Socket;
 use Revolt\EventLoop;
-use Typhoon\Memcached\Exception\ConnectionIsClosed;
-use Typhoon\Memcached\Exception\KeyNotFound;
-use Typhoon\Memcached\Expiration;
-use Typhoon\Memcached\Internal\Protocol\Protocol;
-use Typhoon\Memcached\Item;
-use Typhoon\Memcached\Key;
+use Thesis\Memcached\Exception\ConnectionIsClosed;
+use Thesis\Memcached\Exception\KeyNotFound;
+use Thesis\Memcached\Expiration;
+use Thesis\Memcached\Internal\Protocol\Protocol;
+use Thesis\Memcached\Item;
+use Thesis\Memcached\Key;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  */
 final class BinaryProtocol implements Protocol
 {
@@ -175,6 +174,7 @@ final class BinaryProtocol implements Protocol
      */
     private function sendCommands(ConcurrentIterator $iterator): void
     {
+        /** @phpstan-ignore assign.readOnlyProperty, property.readOnlyAssignByRef */
         $connection = &$this->connection;
         $running = &$this->running;
         $pending = &$this->pending;
@@ -209,6 +209,7 @@ final class BinaryProtocol implements Protocol
     private function resolveCompletions(): void
     {
         $running = &$this->running;
+        /** @phpstan-ignore assign.readOnlyProperty, property.readOnlyAssignByRef */
         $connection = &$this->connection;
         $pending = &$this->pending;
 

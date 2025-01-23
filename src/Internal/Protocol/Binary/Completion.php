@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Binary;
+namespace Thesis\Memcached\Internal\Protocol\Binary;
 
 use Amp\DeferredFuture;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  * @template T
  */
 final class Completion
@@ -25,6 +24,8 @@ final class Completion
     public function complete(Response $response): void
     {
         try {
+            $response->throwOnError();
+
             $this->future->complete(
                 $this->command->parseResponse($response),
             );

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Memcached\Internal\Protocol\Text;
+namespace Thesis\Memcached\Internal\Protocol\Text;
 
 use Amp\ByteStream\ResourceStream;
 use Amp\ByteStream\StreamException;
@@ -10,12 +10,11 @@ use Amp\Pipeline\ConcurrentIterator;
 use Amp\Pipeline\Queue;
 use Amp\Socket\Socket;
 use Revolt\EventLoop;
-use Typhoon\Memcached\Exception\ConnectionIsClosed;
-use Typhoon\Memcached\Exception\WriteIsFailed;
+use Thesis\Memcached\Exception\ConnectionIsClosed;
+use Thesis\Memcached\Exception\WriteIsFailed;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Memcached
  */
 final class Connection
 {
