@@ -9,10 +9,6 @@ jobs:
     services:
       memcached:
         image: memcached
-        command:
-          - --conn-limit=1024
-          - --memory-limit=64
-          - --threads=4
         ports:
           - "127.0.0.1:11211:11211"
     strategy:
